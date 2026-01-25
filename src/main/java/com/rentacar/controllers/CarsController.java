@@ -27,6 +27,14 @@ public class CarsController {
         return carService.getAll();
     }
 
+    @GetMapping("/getAllByPage")
+    public List<GetAllCarsResponse> getAllByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return carService.getAll(page, pageSize);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void add(@RequestBody @Valid CreateCarRequest request) {

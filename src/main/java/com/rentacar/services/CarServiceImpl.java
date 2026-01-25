@@ -11,6 +11,10 @@ import com.rentacar.services.dtos.responses.GetByIdCarResponse;
 import com.rentacar.services.rules.CarBusinessRules;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -79,6 +83,20 @@ public class CarServiceImpl implements ICarService{
     @Override
     public void delete(int id) {
         this.carRepository.deleteById(id);
+    }
+
+    @Override
+    public List<GetAllCarsResponse> getAll(int page, int pageSize) {
+
+        Pageable pageable= PageRequest.of(page, pageSize, Sort.by("dailyPrice").ascending());
+
+        Page<Car> carPage = this.carRepository.findAll(pageable);
+
+        List<GetAllCarsResponse> response = carPage.getContent().stream()
+                .map(car -> this.modelMapper.map(car, GetAllCarsResponse.class))
+                .toList();
+
+        return response;
     }
 
 

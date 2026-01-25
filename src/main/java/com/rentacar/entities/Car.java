@@ -1,9 +1,12 @@
 package com.rentacar.entities;
 
+import com.rentacar.entities.concretes.CarImage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Table(name = "cars")
 @Entity
@@ -32,4 +35,7 @@ public class Car {
     @ManyToOne
     @JoinColumn(name = "model_id")
     private Model model;
+
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    private List<CarImage> carImages;
 }

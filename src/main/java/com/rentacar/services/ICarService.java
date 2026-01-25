@@ -20,4 +20,6 @@ public interface ICarService {
     void update(UpdateCarRequest updateCarRequest);
 
     void delete(int id);
+
+    List<GetAllCarsResponse> getAll(int page, int pageSize);
 }

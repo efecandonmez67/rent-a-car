@@ -1,6 +1,7 @@
 package com.rentacar.entities;
 
 import com.rentacar.entities.concretes.CarImage;
+import com.rentacar.entities.concretes.Rental;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,4 +39,7 @@ public class Car {
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<CarImage> carImages;
+
+    @OneToMany(mappedBy = "car")
+    private List<Rental> rentals;
 }

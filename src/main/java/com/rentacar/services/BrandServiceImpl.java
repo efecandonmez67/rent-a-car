@@ -6,6 +6,7 @@ import com.rentacar.services.dtos.requests.CreateBrandRequest;
 import com.rentacar.services.dtos.requests.UpdateBrandRequest;
 import com.rentacar.services.dtos.responses.GetAllBrandsResponse;
 import com.rentacar.services.dtos.responses.GetByIdBrandResponse;
+import com.rentacar.services.rules.BrandBusinessRules;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class BrandServiceImpl implements IBrandService {
     private final BrandRepository brandRepository;
     private final ModelMapper modelMapper;
 
+    private BrandBusinessRules brandBusinessRules;
+
     @Override
     public List<GetAllBrandsResponse> getAll() {
         List<Brand> brands = brandRepository.findAll();
@@ -33,6 +36,8 @@ public class BrandServiceImpl implements IBrandService {
 
     @Override
     public void add(CreateBrandRequest createBrandRequest) {
+
+        this.brandBusinessRules.checkIfBrandExists(createBrandRequest.getName());
         Brand brand = modelMapper.map(createBrandRequest, Brand.class);
         this.brandRepository.save(brand);
     }

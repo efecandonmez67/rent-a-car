@@ -1,7 +1,7 @@
 package com.rentacar.services;
 
 import com.rentacar.core.utilities.exceptions.BusinessException;
-import com.rentacar.entities.Car;
+import com.rentacar.entities.concretes.Car;
 import com.rentacar.entities.concretes.Rental;
 import com.rentacar.repositories.CarRepository;
 import com.rentacar.repositories.RentalRepository;

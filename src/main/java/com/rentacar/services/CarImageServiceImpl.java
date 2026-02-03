@@ -1,6 +1,6 @@
 package com.rentacar.services;
 
-import com.rentacar.entities.Car;
+import com.rentacar.entities.concretes.Car;
 import com.rentacar.entities.concretes.CarImage;
 import com.rentacar.repositories.CarImageRepository;
 import com.rentacar.repositories.CarRepository;

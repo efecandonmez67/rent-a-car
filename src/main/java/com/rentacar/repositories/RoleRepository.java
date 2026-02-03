@@ -1,13 +1,11 @@
 package com.rentacar.repositories;
 
-import com.rentacar.entities.concretes.Brand;
+import com.rentacar.entities.concretes.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, Integer> {
+public interface RoleRepository extends JpaRepository<Role, Integer> {
 
-    boolean existsByName(String name);
-
-
+    Role findByName(String name);
 }

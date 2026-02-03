@@ -1,6 +1,5 @@
 package com.rentacar.controllers;
 
-import com.rentacar.entities.concretes.Rental;
 import com.rentacar.services.IRentalService;
 import com.rentacar.services.dtos.requests.CreateRentalRequest;
 import com.rentacar.services.dtos.requests.UpdateRentalRequest;

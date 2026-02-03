@@ -1,7 +1,7 @@
 package com.rentacar.services;
 
-import com.rentacar.entities.Car;
-import com.rentacar.entities.Model;
+import com.rentacar.entities.concretes.Car;
+import com.rentacar.entities.concretes.Model;
 import com.rentacar.repositories.CarRepository;
 import com.rentacar.repositories.ModelRepository;
 import com.rentacar.services.dtos.requests.CreateCarRequest;

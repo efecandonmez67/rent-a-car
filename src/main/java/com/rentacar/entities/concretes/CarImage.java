@@ -1,7 +1,6 @@
 package com.rentacar.entities.concretes;
 
 
-import com.rentacar.entities.Car;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

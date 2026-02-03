@@ -6,32 +6,25 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.List;
 
-@Table(name = "rentals")
+@Table(name = "roles")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Rental{
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @Column(name = "date_started")
-    private LocalDate dateStarted;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "rented_for_days")
-    private int rentedForDays;
-
-    private double totalPrice;
-
-    @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
-
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users;
 
 
 

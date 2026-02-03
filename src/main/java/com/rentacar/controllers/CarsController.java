@@ -1,13 +1,10 @@
 package com.rentacar.controllers;
 
-import com.rentacar.entities.Car;
 import com.rentacar.services.ICarService;
 import com.rentacar.services.dtos.requests.CreateCarRequest;
 import com.rentacar.services.dtos.requests.UpdateCarRequest;
-import com.rentacar.services.dtos.requests.UpdateModelRequest;
 import com.rentacar.services.dtos.responses.GetAllCarsResponse;
 import com.rentacar.services.dtos.responses.GetByIdCarResponse;
-import com.rentacar.services.dtos.responses.GetByIdModelResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

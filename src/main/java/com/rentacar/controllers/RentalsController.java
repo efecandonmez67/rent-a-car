@@ -3,6 +3,7 @@ package com.rentacar.controllers;
 import com.rentacar.entities.concretes.Rental;
 import com.rentacar.services.IRentalService;
 import com.rentacar.services.dtos.requests.CreateRentalRequest;
+import com.rentacar.services.dtos.requests.UpdateRentalRequest;
 import com.rentacar.services.dtos.responses.GetAllRentalsResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,17 @@ public class RentalsController {
     @ResponseStatus(HttpStatus.CREATED)
     public void add(@RequestBody @Valid CreateRentalRequest createRentalRequest) {
         rentalService.add(createRentalRequest);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@RequestBody @Valid UpdateRentalRequest updateRentalRequest) {
+        this.rentalService.update(updateRentalRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable int id) {
+        this.rentalService.delete(id);
     }
 }

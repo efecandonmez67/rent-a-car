@@ -6,6 +6,7 @@ import com.rentacar.entities.concretes.Rental;
 import com.rentacar.repositories.CarRepository;
 import com.rentacar.repositories.RentalRepository;
 import com.rentacar.services.dtos.requests.CreateRentalRequest;
+import com.rentacar.services.dtos.requests.UpdateRentalRequest;
 import com.rentacar.services.dtos.responses.GetAllRentalsResponse;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -46,6 +47,33 @@ public class RentalServiceImpl implements IRentalService {
                 .collect(Collectors.toList());
 
         return rentalsResponse;
+    }
+
+    @Override
+    public void update(UpdateRentalRequest updateRentalRequest) {
+
+        Rental rental = this.rentalRepository.findById(updateRentalRequest.getId())
+                .orElseThrow(() -> new BusinessException("Rental not found!"));
+
+        Car car= this.carRepository.findById(updateRentalRequest.getId())
+                .orElseThrow(() -> new BusinessException("Car not found!"));
+
+        double newTotalPrice = updateRentalRequest.getRentedForDays() * car.getDailyPrice();
+
+        rental.setRentedForDays(updateRentalRequest.getRentedForDays());
+        rental.setDateStarted(updateRentalRequest.getDateStarted());
+        rental.setTotalPrice(newTotalPrice);
+        rental.setCar(car);
+        this.rentalRepository.save(rental);
+
+    }
+
+    @Override
+    public void delete(int id) {
+        if(!this.rentalRepository.existsById(id)) {
+            throw new BusinessException("Rental not found!");
+        }
+        this.rentalRepository.deleteById(id);
     }
 
 

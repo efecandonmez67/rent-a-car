@@ -1,0 +1,11 @@
+# Gereksiz Klasörler
+**/node_modules/
+**/target/
+**/.idea/
+**/.vscode/
+**/.DS_Store
+**/dist/
+**/build/
+
+# Loglar vs.
+*.log

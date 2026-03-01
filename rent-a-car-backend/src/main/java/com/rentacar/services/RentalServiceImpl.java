@@ -55,7 +55,7 @@ public class RentalServiceImpl implements IRentalService {
         Rental rental = this.rentalRepository.findById(updateRentalRequest.getId())
                 .orElseThrow(() -> new BusinessException("Rental not found!"));
 
-        Car car= this.carRepository.findById(updateRentalRequest.getId())
+        Car car= this.carRepository.findById(updateRentalRequest.getCarId())
                 .orElseThrow(() -> new BusinessException("Car not found!"));
 
         double newTotalPrice = updateRentalRequest.getRentedForDays() * car.getDailyPrice();

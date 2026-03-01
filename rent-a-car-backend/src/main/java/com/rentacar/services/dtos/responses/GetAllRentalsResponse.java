@@ -17,7 +17,7 @@ public class GetAllRentalsResponse {
     private LocalDate dateStarted;
     private double totalPrice;
     private String carPlate; //modelmapper -- car -> plate
-
+    private int rentedForDays;
 
 
 

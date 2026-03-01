@@ -1,116 +1,104 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-function LoginPage() {
+const LoginPage = () => {
     const navigate = useNavigate();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    // Hata veya Başarı mesajlarını ekranda göstermek için state
-    const [formStatus, setFormStatus] = useState<{type: "success" | "error" | ""; message: string}>({
-        type: "",
-        message: ""
-    });
-
-    const [creds, setCreds] = useState({
-        email: "",
-        password: ""
-    });
-
-    const handleChange = (e: any) => {
-        setCreds({ ...creds, [e.target.name]: e.target.value });
-        // Kullanıcı yazmaya başlayınca hata mesajını temizle
-        if (formStatus.message) setFormStatus({ type: "", message: "" });
-    };
-
-    const handleLogin = async (e: any) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        setError("");
+
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/login", creds);
+            // Backend'e kapıyı çalıyoruz
+            const response = await axios.post("http://localhost:8080/api/auth/login", {
+                email,
+                password
+            });
 
-            // HATA ÇÖZÜMÜ: response değişkenini burada kullanarak TS hatasını giderdik.
-            console.log("Sunucu Yanıtı:", response.data);
+            // YENİ SİSTEM: Paketin içinden hem bileti (token) hem rozeti (role) alıyoruz!
+            const { token, role } = response.data;
 
-            // Şimdilik geçici token (Backend kodunu atınca burayı düzelteceğiz)
-            localStorage.setItem("token", "fake-token-demo");
+            // İkisini de tarayıcının kasasına kilitliyoruz
+            localStorage.setItem("token", token);
+            localStorage.setItem("role", role); // İŞTE BÜTÜN SİHRİ YAPACAK SATIR BU!
 
-            // Ekrana başarı mesajı yaz (Alert yok)
-            setFormStatus({ type: "success", message: "Giriş başarılı. Yönlendiriliyorsunuz..." });
-
-            // 1 saniye sonra yönlendir (Kullanıcı mesajı okusun)
-            setTimeout(() => {
+            // Şov vakti: Adam ADMIN ise direkt yönetim paneline, değilse vitrine yolla
+            if (role === "ADMIN" || role === "ROLE_ADMIN") {
                 navigate("/admin");
-            }, 1000);
+            } else {
+                navigate("/");
+            }
 
-        } catch (error) {
-            console.error("Login Hatası:", error);
-            // Ekrana hata mesajı yaz
-            setFormStatus({ type: "error", message: "Giriş başarısız. Lütfen bilgilerinizi kontrol ediniz." });
+        } catch (err) {
+            console.error("Giriş hatası:", err);
+            setError("Giriş başarısız! Lütfen bilgilerinizi kontrol edin.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 font-sans">
-            <div className="max-w-md w-full bg-white p-10 rounded-3xl shadow-2xl border border-gray-100">
-
-                <div className="text-center mb-10">
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
+            <div className="bg-white max-w-md w-full p-8 rounded-3xl shadow-xl border border-gray-100">
+                <div className="text-center mb-8">
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        Yönetim Paneli <span className="text-orange-600">Girişi</span>
+                        RentA<span className="text-blue-600">Car</span>
                     </h1>
-                    <p className="text-gray-500 mt-3 text-sm">Devam etmek için lütfen oturum açınız.</p>
+                    <p className="text-gray-500 mt-2 font-medium">Hoş geldiniz, lütfen giriş yapın.</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-6">
+                {error && (
+                    <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-bold mb-6 text-center border border-red-100">
+                        {error}
+                    </div>
+                )}
+
+                <form onSubmit={handleLogin} className="space-y-5">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">E-Posta Adresi</label>
+                        <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">E-posta Adresi</label>
                         <input
                             type="email"
-                            name="email"
-                            value={creds.email}
-                            onChange={handleChange}
-                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
-                            placeholder="ornek@rentacar.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                            placeholder="ornek@mail.com"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">Şifre</label>
+                        <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">Şifre</label>
                         <input
                             type="password"
-                            name="password"
-                            value={creds.password}
-                            onChange={handleChange}
-                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 transition"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-4 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
                             placeholder="••••••••"
                             required
                         />
                     </div>
 
-                    {/* DİNAMİK MESAJ ALANI (Alert yerine burası çalışacak) */}
-                    {formStatus.message && (
-                        <div className={`text-center p-3 rounded-lg text-sm font-bold ${
-                            formStatus.type === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                        }`}>
-                            {formStatus.message}
-                        </div>
-                    )}
-
                     <button
                         type="submit"
-                        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-orange-500/30"
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-4 hover:bg-blue-700 transition shadow-lg shadow-blue-500/30 disabled:opacity-70"
                     >
-                        Giriş Yap
+                        {loading ? "Giriş Yapılıyor... ⏳" : "GİRİŞ YAP"}
                     </button>
                 </form>
 
-                <div className="mt-8 text-center border-t border-gray-100 pt-6">
-                    <button onClick={() => navigate("/")} className="text-gray-400 hover:text-orange-600 text-sm font-semibold transition">
-                        ← Ana Sayfaya Dön
-                    </button>
+                <div className="mt-8 text-center text-sm font-medium text-gray-500">
+                    Hesabınız yok mu? <Link to="/register" className="text-blue-600 hover:underline">Hemen Kayıt Olun</Link>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default LoginPage;

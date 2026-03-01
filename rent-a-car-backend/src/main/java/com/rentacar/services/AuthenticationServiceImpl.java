@@ -72,12 +72,16 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                         loginRequest.getPassword()
                 ));
 
-        User user= userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
 
-        String jwtToken= jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
+
+
+        String userRole = user.getAuthorities().iterator().next().getAuthority();
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .role(userRole)
                 .build();
     }
 }

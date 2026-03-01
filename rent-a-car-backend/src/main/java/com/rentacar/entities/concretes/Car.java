@@ -1,5 +1,6 @@
 package com.rentacar.entities.concretes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,8 +37,10 @@ public class Car {
     private Model model;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<CarImage> carImages;
 
     @OneToMany(mappedBy = "car")
+    @JsonIgnore
     private List<Rental> rentals;
 }

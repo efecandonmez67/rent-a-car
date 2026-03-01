@@ -42,7 +42,8 @@ public class CarImageServiceImpl implements ICarImageService {
         Files.write(filePath, file.getBytes());
 
         CarImage carImage = new CarImage();
-        carImage.setImagePath(filePath.toString());
+        String imageUrl = "http://localhost:8080/uploads/" + fileName;
+        carImage.setImagePath(imageUrl);
         carImage.setDate(LocalDateTime.now());
         carImage.setCar(car);
 

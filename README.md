@@ -20,16 +20,16 @@ A modern, high-performance full-stack car rental platform. Built with a focus on
 
 ## 🚀 Quick Start
 
-**1. Run the Backend (Spring Boot)**
+**Run the Project (Spring Boot & React)**
 ```bash
+1. Run the Backend (Spring Boot)
 # Navigate to the backend directory
 cd backend
 
 # Run the Spring Boot application
 ./mvnw spring-boot:run
 
-
-**2. Run the Frontend (React)**
+2. Run the Frontend (React)
 # Navigate to the frontend directory
 cd rent-a-car-frontend
 

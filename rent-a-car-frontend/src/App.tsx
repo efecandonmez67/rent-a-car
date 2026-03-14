@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import Navbar from "./components/Navbar.tsx";
 import CarsPage from "./pages/CarsPage.tsx";
 import ProfilePage from "./pages/ProfilePage.tsx";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                 </Route>
                 <Route path="/cars" element={<CarsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/register" element={<RegisterPage />} />
             </Routes>
         </BrowserRouter>
     );

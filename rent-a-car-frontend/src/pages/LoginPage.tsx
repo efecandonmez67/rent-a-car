@@ -16,7 +16,7 @@ const LoginPage = () => {
 
         try {
             // Backend'e kapıyı çalıyoruz
-            const response = await axios.post("http://localhost:8080/api/auth/login", {
+            const response = await axios.post("https://rent-a-car-api-ccen.onrender.com/api/auth/login", {
                 email,
                 password
             });

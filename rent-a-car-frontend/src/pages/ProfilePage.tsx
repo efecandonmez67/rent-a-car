@@ -28,7 +28,7 @@ const ProfilePage = () => {
         // Giriş yapılmışsa kiralama geçmişini çek
         const fetchRentals = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/api/rentals", {
+                const response = await axios.get("https://rent-a-car-api-ccen.onrender.com/api/rentals", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setRentals(response.data);

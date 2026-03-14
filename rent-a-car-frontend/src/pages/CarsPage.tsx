@@ -27,8 +27,8 @@ const CarsPage = () => {
         queryKey: ["carsAndImages"], // Bu verinin hafızadaki etiketi (ID'si)
         queryFn: async () => {
             const [carsRes, imagesRes] = await Promise.all([
-                axios.get("http://localhost:8080/api/cars"),
-                axios.get("http://localhost:8080/api/car-images/getAll")
+                axios.get("https://rent-a-car-api-ccen.onrender.com/api/cars"),
+                axios.get("https://rent-a-car-api-ccen.onrender.com/api/car-images/getAll")
             ]);
             // İki veriyi birleştirip tek bir paket olarak hafızaya atıyoruz
             return { cars: carsRes.data as CarResponse[], images: imagesRes.data as CarImageResponse[] };

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @AllArgsConstructor
 @RequestMapping("/api/car-images")
 public class CarImagesController {

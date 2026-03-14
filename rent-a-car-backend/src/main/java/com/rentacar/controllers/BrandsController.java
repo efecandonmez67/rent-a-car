@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/brands")
 @AllArgsConstructor
 public class BrandsController {

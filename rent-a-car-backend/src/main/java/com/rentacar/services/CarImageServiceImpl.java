@@ -42,7 +42,7 @@ public class CarImageServiceImpl implements ICarImageService {
         Files.write(filePath, file.getBytes());
 
         CarImage carImage = new CarImage();
-        String imageUrl = "http://localhost:8080/uploads/" + fileName;
+        String imageUrl = "https://rent-a-car-api-ccen.onrender.com/uploads/" + fileName;
         carImage.setImagePath(imageUrl);
         carImage.setDate(LocalDateTime.now());
         carImage.setCar(car);

@@ -17,23 +17,17 @@ const RegisterPage = () => {
         setError("");
 
         try {
-            // Backend'deki register endpoint'ine gidiyoruz
-            // NOT: Backend'deki DTO yapına göre firstName, lastName isimlerini kontrol et!
             await axios.post("https://rent-a-car-api-ccen.onrender.com/api/auth/register", {
-                firstName,
-                lastName,
                 email,
                 password
             });
 
-            // Kayıt başarılıysa kullanıcıyı login sayfasına yönlendiriyoruz
             alert("Kayıt başarılı! Giriş yapabilirsiniz.");
             navigate("/login");
 
         } catch (err: any) {
             console.error("Kayıt hatası:", err);
-            // Eğer CORS hatası alırsan yine o kırmızı hatayı göreceğiz
-            setError("Kayıt başarısız! E-posta zaten kullanımda olabilir veya sunucu hatası.");
+            setError("Kayıt başarısız! Bilgilerinizi kontrol edin.");
         } finally {
             setLoading(false);
         }

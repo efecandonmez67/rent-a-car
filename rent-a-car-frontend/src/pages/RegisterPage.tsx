@@ -64,7 +64,7 @@ const RegisterPage = () => {
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
                                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                                placeholder="Efe"
+                                placeholder="..."
                                 required
                             />
                         </div>
@@ -75,7 +75,7 @@ const RegisterPage = () => {
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
                                 className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                                placeholder="Can"
+                                placeholder="..."
                                 required
                             />
                         </div>

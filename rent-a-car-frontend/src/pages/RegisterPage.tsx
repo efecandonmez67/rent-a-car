@@ -4,8 +4,6 @@ import { useNavigate, Link } from "react-router-dom";
 
 const RegisterPage = () => {
     const navigate = useNavigate();
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -16,18 +14,26 @@ const RegisterPage = () => {
         setLoading(true);
         setError("");
 
+        // Backend'deki @Size(min = 6) kuralını burada da kontrol edelim
+        if (password.length < 6) {
+            setError("Şifre en az 6 karakter olmalıdır!");
+            setLoading(false);
+            return;
+        }
+
         try {
+            // Sadece email ve password gönderiyoruz, tam Backend'in istediği gibi!
             await axios.post("https://rent-a-car-api-ccen.onrender.com/api/auth/register", {
                 email,
                 password
             });
 
-            alert("Kayıt başarılı! Giriş yapabilirsiniz.");
+            alert("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
             navigate("/login");
 
         } catch (err: any) {
             console.error("Kayıt hatası:", err);
-            setError("Kayıt başarısız! Bilgilerinizi kontrol edin.");
+            setError("Kayıt başarısız! Bu e-posta zaten kayıtlı olabilir.");
         } finally {
             setLoading(false);
         }
@@ -40,7 +46,7 @@ const RegisterPage = () => {
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
                         RentA<span className="text-blue-600">Car</span>
                     </h1>
-                    <p className="text-gray-500 mt-2 font-medium">Yeni hesap oluşturun.</p>
+                    <p className="text-gray-500 mt-2 font-medium">Hemen ücretsiz hesap oluşturun.</p>
                 </div>
 
                 {error && (
@@ -49,32 +55,7 @@ const RegisterPage = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="flex gap-4">
-                        <div className="flex-1">
-                            <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">Ad</label>
-                            <input
-                                type="text"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                                placeholder="Ahmet"
-                                required
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">Soyad</label>
-                            <input
-                                type="text"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                className="w-full bg-gray-50 border border-gray-200 text-gray-900 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-                                placeholder="Demir"
-                                required
-                            />
-                        </div>
-                    </div>
-
+                <form onSubmit={handleRegister} className="space-y-5">
                     <div>
                         <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">E-posta Adresi</label>
                         <input
@@ -88,7 +69,7 @@ const RegisterPage = () => {
                     </div>
 
                     <div>
-                        <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">Şifre</label>
+                        <label className="block text-gray-700 font-bold mb-2 text-sm ml-1">Şifre (Min. 6 Karakter)</label>
                         <input
                             type="password"
                             value={password}
@@ -109,7 +90,7 @@ const RegisterPage = () => {
                 </form>
 
                 <div className="mt-8 text-center text-sm font-medium text-gray-500">
-                    Zaten hesabınız var mı? <Link to="/login" className="text-blue-600 hover:underline">Giriş Yapın</Link>
+                    Zaten bir hesabın var mı? <Link to="/login" className="text-blue-600 hover:underline">Giriş Yap</Link>
                 </div>
             </div>
         </div>

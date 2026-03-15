@@ -28,7 +28,6 @@ const RegisterPage = () => {
                 password: password
             });
 
-            alert("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");
             navigate("/login");
 
         } catch (err: any) {

@@ -24,8 +24,8 @@ const RegisterPage = () => {
         try {
             // Sadece email ve password gönderiyoruz, tam Backend'in istediği gibi!
             await axios.post("https://rent-a-car-api-ccen.onrender.com/api/auth/register", {
-                email,
-                password
+                email: email,
+                password: password
             });
 
             alert("Kayıt başarılı! Şimdi giriş yapabilirsiniz.");

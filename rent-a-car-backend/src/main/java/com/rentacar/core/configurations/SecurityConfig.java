@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/cars/**", "/api/models/**", "/api/brands/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/cars/**", "/api/models/**", "/api/brands/**", "/api/car-images/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )

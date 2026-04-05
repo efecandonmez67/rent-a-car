@@ -1,5 +1,6 @@
 package com.rentacar.services;
 
+import com.rentacar.core.services.ImageUploadService;
 import com.rentacar.entities.concretes.Car;
 import com.rentacar.entities.concretes.CarImage;
 import com.rentacar.repositories.CarImageRepository;
@@ -21,28 +22,18 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CarImageServiceImpl implements ICarImageService {
 
-    private CarImageRepository carImageRepository;
-    private CarRepository carRepository;
-
-    private final String UPLOAD_DIR = System.getProperty("user.dir") + "\\uploads\\";
+    private final CarImageRepository carImageRepository;
+    private final CarRepository carRepository;
+    private final ImageUploadService imageUploadService;
 
     @Override
     public void add(MultipartFile file, int carId) throws IOException {
 
         Car car= carRepository.findById(carId).orElseThrow(() -> new RuntimeException("Araba bulunamadı!"));
 
-        File directory = new File(UPLOAD_DIR);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
-        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
-        Path filePath = Paths.get(UPLOAD_DIR + fileName);
-        Files.write(filePath, file.getBytes());
+        String imageUrl= imageUploadService.uploadImage(file);
 
         CarImage carImage = new CarImage();
-        String imageUrl = "https://rent-a-car-api-ccen.onrender.com/uploads/" + fileName;
         carImage.setImagePath(imageUrl);
         carImage.setDate(LocalDateTime.now());
         carImage.setCar(car);

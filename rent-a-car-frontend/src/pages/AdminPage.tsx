@@ -13,8 +13,8 @@ function AdminPage() {
     const [models, setModels] = useState<Model[]>([]);
     const [cars, setCars] = useState<CarResponse[]>([]);
 
-    const fetchModels = async () => { try { const res = await axios.get("https://rent-a-car-api-ccen.onrender.com/api/models"); setModels(res.data); } catch (e) { console.error(e); } };
-    const fetchCars = async () => { try { const res = await axios.get("https://rent-a-car-api-ccen.onrender.com/api/cars"); setCars(res.data); } catch (e) { console.error(e); } };
+    const fetchModels = async () => { try { const res = await axios.get("http://localhost:8080/api/models"); setModels(res.data); } catch (e) { console.error(e); } };
+    const fetchCars = async () => { try { const res = await axios.get("http://localhost:8080/api/cars"); setCars(res.data); } catch (e) { console.error(e); } };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -36,7 +36,7 @@ function AdminPage() {
     const handleCarSubmit = async (e: any) => {
         e.preventDefault();
         try {
-            await axios.post("https://rent-a-car-api-ccen.onrender.com/api/cars", formData, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            await axios.post("http://localhost:8080/api/cars", formData, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
             setNotification({ type: "success", message: "Araç başarıyla eklendi." });
             setFormData({ modelId: 0, dailyPrice: 0, modelYear: 2023, plate: "", state: 1 });
             fetchCars();
@@ -52,7 +52,7 @@ function AdminPage() {
             const targetModel = models.find(m => m.name === car.modelName);
             if (!targetModel) return;
             const updatePayload = { id: car.id, modelId: targetModel.id, dailyPrice: car.dailyPrice, modelYear: car.modelYear, plate: car.plate, state: 1 };
-            await axios.put("https://rent-a-car-api-ccen.onrender.com/api/cars", updatePayload, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            await axios.put("http://localhost:8080/api/cars", updatePayload, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
             setNotification({ type: "success", message: `${car.plate} plakalı araç teslim alındı!` });
             fetchCars();
             setTimeout(() => setNotification({type:"", message:""}), 3000);
@@ -77,7 +77,7 @@ function AdminPage() {
         uploadData.append("carId", imageCarId.toString());
 
         try {
-            await axios.post("https://rent-a-car-api-ccen.onrender.com/api/car-images/add", uploadData, {
+            await axios.post("http://localhost:8080/api/car-images/add", uploadData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                     "Content-Type": "multipart/form-data"

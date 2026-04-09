@@ -82,6 +82,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .role(userRole)
+                .id(user.getId())
                 .build();
     }
 }

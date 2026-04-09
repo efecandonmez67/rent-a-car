@@ -15,18 +15,20 @@ const LoginPage = () => {
         setError("");
 
         try {
-            // Backend'e kapıyı çalıyoruz
-            const response = await axios.post("https://rent-a-car-api-ccen.onrender.com/api/auth/login", {
+            const response = await axios.post("http://localhost:8080/api/auth/login", {
                 email,
                 password
             });
 
             // YENİ SİSTEM: Paketin içinden hem bileti (token) hem rozeti (role) alıyoruz!
-            const { token, role } = response.data;
+            const { token, role, id } = response.data;
+
+            console.log("Giriş başarılı, gelen ID:", id); // Kontrol için ekle
 
             // İkisini de tarayıcının kasasına kilitliyoruz
             localStorage.setItem("token", token);
-            localStorage.setItem("role", role); // İŞTE BÜTÜN SİHRİ YAPACAK SATIR BU!
+            localStorage.setItem("role", role);
+            localStorage.setItem("userId", id.toString());
 
             // Şov vakti: Adam ADMIN ise direkt yönetim paneline, değilse vitrine yolla
             if (role === "ADMIN" || role === "ROLE_ADMIN") {

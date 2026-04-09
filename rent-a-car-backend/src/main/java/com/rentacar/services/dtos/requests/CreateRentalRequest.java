@@ -23,4 +23,8 @@ public class CreateRentalRequest {
 
     @NotNull
     private int carId;
+
+    @NotNull
+    private int userId;
+
 }

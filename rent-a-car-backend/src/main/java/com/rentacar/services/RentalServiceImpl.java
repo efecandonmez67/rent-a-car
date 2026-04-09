@@ -3,8 +3,10 @@ package com.rentacar.services;
 import com.rentacar.core.utilities.exceptions.BusinessException;
 import com.rentacar.entities.concretes.Car;
 import com.rentacar.entities.concretes.Rental;
+import com.rentacar.entities.concretes.User;
 import com.rentacar.repositories.CarRepository;
 import com.rentacar.repositories.RentalRepository;
+import com.rentacar.repositories.UserRepository;
 import com.rentacar.services.dtos.requests.CreateRentalRequest;
 import com.rentacar.services.dtos.requests.UpdateRentalRequest;
 import com.rentacar.services.dtos.responses.GetAllRentalsResponse;
@@ -22,11 +24,20 @@ public class RentalServiceImpl implements IRentalService {
     private RentalRepository rentalRepository;
     private CarRepository carRepository;
     private ModelMapper modelMapper;
+    private UserRepository userRepository;
 
 
     public void add(CreateRentalRequest createRentalRequest) {
         Car car= this.carRepository.findById(createRentalRequest.getCarId())
-                .orElseThrow(() -> new BusinessException("Car not found!"));
+                .orElseThrow(() -> new BusinessException("Araba bulunamadı!"));
+
+        if(car.getState()!=1) {
+            throw new BusinessException("Bu araç şu anda kiralanamaz! (Zaten kirada veya bakımda)");
+        }
+
+        User user=this.userRepository.findById(createRentalRequest.getUserId())
+                .orElseThrow(() -> new BusinessException("Kullanıcı bulunamadı!"));
+
         double totalPrice = createRentalRequest.getRentedForDays() * car.getDailyPrice();
 
         Rental rental = new Rental();
@@ -34,8 +45,11 @@ public class RentalServiceImpl implements IRentalService {
         rental.setRentedForDays(createRentalRequest.getRentedForDays());
         rental.setCar(car);
         rental.setTotalPrice(totalPrice);
+        rental.setUser(user);
 
-        rentalRepository.save(rental);
+        this.rentalRepository.save(rental);
+        car.setState(2);
+        this.carRepository.save(car);
     }
 
     @Override

@@ -7,7 +7,6 @@ export interface CreateRentalRequest {
     rentedForDays: number;
 }
 
-// Backend'den gelecek kiralama verilerinin tipi (İsteğe bağlı ekleyebilirsin)
 export interface RentalResponse {
     id: number;
     carName: string;
@@ -17,14 +16,16 @@ export interface RentalResponse {
     totalPrice: number;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+const API_URL = import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "http://localhost:8080/api";
 
 class RentalService {
 
     rentCar(request: CreateRentalRequest) {
         const token = localStorage.getItem('token');
 
-        return axios.post(API_URL, request, {
+        return axios.post(`${API_URL}/rentals`, request, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -34,7 +35,7 @@ class RentalService {
     getRentalsByUserId(userId: number) {
         const token = localStorage.getItem('token');
 
-        return axios.get(`${API_URL}/user/${userId}`, {
+        return axios.get(`${API_URL}/rentals/user/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

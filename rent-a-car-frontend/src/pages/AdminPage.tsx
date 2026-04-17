@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 interface CreateCarRequest { modelId: number; dailyPrice: number; modelYear: number; plate: string; state: number; }
+interface Brand { id: number; name: string; }
 interface Model { id: number; name: string; brandName?: string; }
 interface CarResponse { id: number; dailyPrice: number; modelYear: number; plate: string; state: number; modelName: string; modelBrandName: string; }
 
@@ -10,9 +11,11 @@ function AdminPage() {
     const navigate = useNavigate();
     const [notification, setNotification] = useState<{type: "success" | "error" | ""; message: string}>({ type: "", message: "" });
 
+    const [brands, setBrands] = useState<Brand[]>([]);
     const [models, setModels] = useState<Model[]>([]);
     const [cars, setCars] = useState<CarResponse[]>([]);
 
+    const fetchBrands = async () => { try { const res = await axios.get("http://localhost:8080/api/brands"); setBrands(res.data); } catch (e) { console.error(e); } };
     const fetchModels = async () => { try { const res = await axios.get("http://localhost:8080/api/models"); setModels(res.data); } catch (e) { console.error(e); } };
     const fetchCars = async () => { try { const res = await axios.get("http://localhost:8080/api/cars"); setCars(res.data); } catch (e) { console.error(e); } };
 
@@ -25,11 +28,44 @@ function AdminPage() {
             return;
         }
 
+        fetchBrands();
         fetchModels();
         fetchCars();
     }, [navigate]);
 
-    // --- 1. ARAÇ EKLEME İŞLEMLERİ ---
+    // --- MARKA EKLEME İŞLEMLERİ ---
+    const [newBrandName, setNewBrandName] = useState("");
+    const handleBrandSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            await axios.post("http://localhost:8080/api/brands", { name: newBrandName }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            setNotification({ type: "success", message: "Marka başarıyla eklendi! 🏷️" });
+            setNewBrandName("");
+            fetchBrands(); // Marka eklendikten sonra listeyi yenile
+            setTimeout(() => setNotification({type:"", message:""}), 3000);
+        } catch (error) {
+            setNotification({ type: "error", message: "Hata: Marka eklenemedi!" });
+        }
+    };
+
+    // --- MODEL EKLEME İŞLEMLERİ ---
+    const [newModelName, setNewModelName] = useState("");
+    const [selectedBrandForModel, setSelectedBrandForModel] = useState<number>(0);
+    const handleModelSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            await axios.post("http://localhost:8080/api/models", { name: newModelName, brandId: selectedBrandForModel }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            setNotification({ type: "success", message: "Model başarıyla eklendi! 🚘" });
+            setNewModelName("");
+            setSelectedBrandForModel(0);
+            fetchModels(); // Model eklendikten sonra araç listesi için yenile
+            setTimeout(() => setNotification({type:"", message:""}), 3000);
+        } catch (error) {
+            setNotification({ type: "error", message: "Hata: Model eklenemedi!" });
+        }
+    };
+
+    // --- ARAÇ EKLEME İŞLEMLERİ ---
     const [formData, setFormData] = useState<CreateCarRequest>({ modelId: 0, dailyPrice: 0, modelYear: 2023, plate: "", state: 1 });
     const handleChange = (e: any) => setFormData({ ...formData, [e.target.name]: e.target.name === "plate" ? e.target.value : Number(e.target.value) });
 
@@ -46,7 +82,7 @@ function AdminPage() {
         }
     };
 
-    // --- 2. İADE (TESLİM ALMA) İŞLEMLERİ ---
+    // --- İADE (TESLİM ALMA) İŞLEMLERİ ---
     const handleReturnCar = async (car: CarResponse) => {
         try {
             const targetModel = models.find(m => m.name === car.modelName);
@@ -61,7 +97,7 @@ function AdminPage() {
         }
     };
 
-    // --- 3. FOTOĞRAF YÜKLEME İŞLEMLERİ ---
+    // --- FOTOĞRAF YÜKLEME İŞLEMLERİ ---
     const [imageCarId, setImageCarId] = useState<number>(0);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -122,41 +158,49 @@ function AdminPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
 
+                    {/* SOL KOLON - VERİ GİRİŞ FORMLARI */}
                     <div className="lg:col-span-1 space-y-8">
 
+                        {/* YENİ MARKA EKLE */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
+                            <div className="absolute top-0 right-0 w-2 h-full bg-purple-500"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                                <span className="bg-blue-100 text-blue-600 p-2 rounded-lg text-lg">📸</span> Fotoğraf Yükle
+                                <span className="bg-purple-100 text-purple-600 p-2 rounded-lg text-lg">🏷️</span> Yeni Marka Tanımla
                             </h2>
-                            <form onSubmit={handleImageSubmit} className="space-y-4">
+                            <form onSubmit={handleBrandSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-gray-600 font-semibold mb-2 text-sm">Araç Seçin</label>
-                                    <select value={imageCarId} onChange={(e) => setImageCarId(Number(e.target.value))}
-                                            className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500">
-                                        <option value={0}>-- Seçiniz --</option>
-                                        {cars.map(car => (
-                                            <option key={car.id} value={car.id}>
-                                                {car.plate} - {car.modelBrandName} {car.modelName}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <label className="block text-sm font-semibold mb-1">Marka Adı</label>
+                                    <input type="text" value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl uppercase" placeholder="Örn: CUPRA" required />
                                 </div>
-                                <div>
-                                    <label className="block text-gray-600 font-semibold mb-2 text-sm">Dosya (.jpg,
-                                        .png)</label>
-                                    <input type="file" accept="image/*"
-                                           onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
-                                           className="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-sm"/>
-                                </div>
-                                <button type="submit"
-                                        className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
-                                    YÜKLE
-                                </button>
+                                <button type="submit" className="w-full bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition shadow-lg shadow-purple-500/30">KAYDET</button>
                             </form>
                         </div>
 
-                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100">
+                        {/* YENİ MODEL EKLE */}
+                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-2 h-full bg-indigo-500"></div>
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                                <span className="bg-indigo-100 text-indigo-600 p-2 rounded-lg text-lg">🚘</span> Yeni Model Tanımla
+                            </h2>
+                            <form onSubmit={handleModelSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold mb-1">Hangi Markaya Ait?</label>
+                                    <select value={selectedBrandForModel} onChange={(e) => setSelectedBrandForModel(Number(e.target.value))} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl" required>
+                                        <option value={0}>-- Seç --</option>
+                                        {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold mb-1">Model Adı</label>
+                                    <input type="text" value={newModelName} onChange={(e) => setNewModelName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl uppercase" placeholder="Örn: FORMENTOR" required />
+                                </div>
+                                <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-500/30">KAYDET</button>
+                            </form>
+                        </div>
+
+                        {/* YENİ ARAÇ KAYDI (Mevcut) */}
+                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-2 h-full bg-gray-600"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                                 <span className="bg-gray-100 text-gray-600 p-2 rounded-lg text-lg">✚</span> Yeni Araç Kaydı
                             </h2>
@@ -180,14 +224,46 @@ function AdminPage() {
                                     <label className="block text-sm font-semibold mb-1">Plaka</label>
                                     <input type="text" name="plate" value={formData.plate} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl uppercase" required />
                                 </div>
-                                <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition">KAYDET</button>
+                                <button type="submit" className="w-full bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-gray-900 transition">KAYDET</button>
+                            </form>
+                        </div>
+
+                        {/* FOTOĞRAF YÜKLE (Mevcut) */}
+                        <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                                <span className="bg-blue-100 text-blue-600 p-2 rounded-lg text-lg">📸</span> Fotoğraf Yükle
+                            </h2>
+                            <form onSubmit={handleImageSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-gray-600 font-semibold mb-2 text-sm">Araç Seçin</label>
+                                    <select value={imageCarId} onChange={(e) => setImageCarId(Number(e.target.value))}
+                                            className="w-full bg-gray-50 border border-gray-200 p-3 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                        <option value={0}>-- Seçiniz --</option>
+                                        {cars.map(car => (
+                                            <option key={car.id} value={car.id}>
+                                                {car.plate} - {car.modelBrandName} {car.modelName}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-gray-600 font-semibold mb-2 text-sm">Dosya (.jpg, .png)</label>
+                                    <input type="file" accept="image/*"
+                                           onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                                           className="w-full bg-gray-50 border border-gray-200 p-2 rounded-xl text-sm"/>
+                                </div>
+                                <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
+                                    YÜKLE
+                                </button>
                             </form>
                         </div>
 
                     </div>
 
+                    {/* SAĞ KOLON - TABLOLAR VE LİSTELER (Mevcut koduna hiç dokunmadık) */}
                     <div className="lg:col-span-2 space-y-8">
-
+                        {/* Kiradaki Araçlar Kartı (Senin kodun birebir aynısı) */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-orange-400"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -213,6 +289,7 @@ function AdminPage() {
                             )}
                         </div>
 
+                        {/* Vitrindeki Araçlar Kartı (Senin kodun birebir aynısı) */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-green-500"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -245,10 +322,8 @@ function AdminPage() {
                                 </div>
                             )}
                         </div>
-
                     </div>
                 </div>
-
             </div>
         </div>
     );

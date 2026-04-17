@@ -90,5 +90,13 @@ public class RentalServiceImpl implements IRentalService {
         this.rentalRepository.deleteById(id);
     }
 
+    @Override
+    public List<GetAllRentalsResponse> getRentalsByUserId(int userId) {
+        List<Rental> rentals= rentalRepository.findByUserId(userId);
+        return rentals.stream()
+                .map(rental -> this.modelMapper.map(rental, GetAllRentalsResponse.class))
+                .collect(Collectors.toList());
+    }
+
 
 }

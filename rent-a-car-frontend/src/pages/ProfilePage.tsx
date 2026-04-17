@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import RentalService from "../services/RentalService"; // 🎯 Servisimizi import ettik (Yolunu kendi projene göre ayarla)
 
 // Backend'den (GetAllRentalsResponse) gelen veri şablonumuz
 interface RentalResponse {
     id: number;
-    dateStarted: string; // LocalDate React'e String ('YYYY-MM-DD') olarak gelir
+    dateStarted: string;
     totalPrice: number;
     carPlate: string;
     rentedForDays: number;
@@ -18,19 +18,22 @@ const ProfilePage = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // Sayfa açıldığında giriş yapılmış mı kontrol et
+        // 🎯 Kasadan hem bileti (token) hem de kimliği (userId) alıyoruz
         const token = localStorage.getItem("token");
-        if (!token) {
+        const userId = localStorage.getItem("userId");
+
+        // İkisinden biri yoksa adamı yaka paça login'e yolla
+        if (!token || !userId) {
             navigate("/login");
             return;
         }
 
-        // Giriş yapılmışsa kiralama geçmişini çek
+        // Kiralama geçmişini çek
         const fetchRentals = async () => {
             try {
-                const response = await axios.get("https://rent-a-car-api-ccen.onrender.com/api/rentals", {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                // 🚀 Axios yerine doğrudan kendi yazdığımız RentalService'i kullanıyoruz!
+                // İçine de kasadan aldığımız userId'yi Number'a çevirip veriyoruz.
+                const response = await RentalService.getRentalsByUserId(parseInt(userId));
                 setRentals(response.data);
                 setLoading(false);
             } catch (err) {
@@ -64,7 +67,7 @@ const ProfilePage = () => {
                 </h2>
 
                 {loading && <div className="text-center font-bold text-xl py-10 text-gray-500">Kayıtlar aranıyor... ⏳</div>}
-                {error && <div className="bg-red-100 text-red-600 font-bold p-6 rounded-2xl text-center">{error}</div>}
+                {error && <div className="bg-red-100 text-red-600 font-bold p-6 rounded-2xl text-center border border-red-200">{error}</div>}
 
                 {/* Eğer hiç kiralama yapılmamışsa */}
                 {!loading && !error && rentals.length === 0 && (
@@ -72,7 +75,7 @@ const ProfilePage = () => {
                         <span className="text-5xl mb-4 block">🏜️</span>
                         <h3 className="text-xl font-bold text-gray-800">Henüz hiç araç kiralamamışsınız.</h3>
                         <p className="text-gray-500 mt-2 mb-6">Yola çıkmak için harika araçlarımız sizi bekliyor.</p>
-                        <button onClick={() => navigate("/cars")} className="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
+                        <button onClick={() => navigate("/")} className="bg-blue-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-500/30">
                             Araçlarımıza Göz At
                         </button>
                     </div>
@@ -99,8 +102,6 @@ const ProfilePage = () => {
                                     </div>
                                 </div>
 
-                                {/* ... Kartın Üst Kısmı Aynı Kalıyor ... */}
-
                                 <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                                     <div className="flex gap-6">
                                         {/* Başlangıç Tarihi */}
@@ -109,19 +110,19 @@ const ProfilePage = () => {
                                             <p className="font-bold text-gray-800">{rental.dateStarted}</p>
                                         </div>
 
-                                        {/* Bitiş Tarihi (Hesaplama Sihri Burada) */}
+                                        {/* Bitiş Tarihi */}
                                         <div>
                                             <p className="text-sm text-gray-500 font-medium flex items-center gap-1">
                                                 Bitiş Tarihi
                                                 <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full ml-1">
-                    {rental.rentedForDays} Gün
-                </span>
+                                                    {rental.rentedForDays} Gün
+                                                </span>
                                             </p>
                                             <p className="font-bold text-red-600">
                                                 {(() => {
                                                     const start = new Date(rental.dateStarted);
                                                     start.setDate(start.getDate() + rental.rentedForDays);
-                                                    return start.toISOString().split('T')[0]; // YYYY-MM-DD formatına çevir
+                                                    return start.toISOString().split('T')[0];
                                                 })()}
                                             </p>
                                         </div>

@@ -42,4 +42,9 @@ public class RentalsController {
     public void delete(@PathVariable int id) {
         this.rentalService.delete(id);
     }
+
+    @GetMapping("/user/{userId}")
+    public List<GetAllRentalsResponse> getRentalsByUser(@PathVariable int userId) {
+        return rentalService.getRentalsByUserId(userId);
+    }
 }

@@ -3,11 +3,21 @@ import axios from 'axios';
 export interface CreateRentalRequest {
     carId: number;
     userId: number;
-    dateStarted: string; // Örn: '2026-04-15'
+    dateStarted: string;
     rentedForDays: number;
 }
 
-const API_URL = 'http://localhost:8080/api/rentals';
+// Backend'den gelecek kiralama verilerinin tipi (İsteğe bağlı ekleyebilirsin)
+export interface RentalResponse {
+    id: number;
+    carName: string;
+    modelBrandName: string;
+    dateStarted: string;
+    rentedForDays: number;
+    totalPrice: number;
+}
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 class RentalService {
 
@@ -15,6 +25,16 @@ class RentalService {
         const token = localStorage.getItem('token');
 
         return axios.post(API_URL, request, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }
+
+    getRentalsByUserId(userId: number) {
+        const token = localStorage.getItem('token');
+
+        return axios.get(`${API_URL}/user/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }

@@ -15,3 +15,6 @@
 /uploads/7da84be9-ce71-49a1-9491-54b021bee76e_22-BMW-X5-Blue.png
 /rent-a-car-backend/src/main/main.iml
 /rent-a-car-backend/src/test/test.iml
+
+# Çevre Değişkenleri (Gizli Ayarlar)
+.env

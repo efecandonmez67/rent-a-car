@@ -17,4 +17,6 @@ public interface IRentalService {
 
      void delete(int id);
 
+     List<GetAllRentalsResponse> getRentalsByUserId(int userId);
+
 }

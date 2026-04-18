@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import RentalService from "../services/RentalService"; // 🎯 Servisimizi import ettik (Yolunu kendi projene göre ayarla)
+import RentalService from "../services/RentalService";
 
-// Backend'den (GetAllRentalsResponse) gelen veri şablonumuz
 interface RentalResponse {
     id: number;
     dateStarted: string;
@@ -18,11 +17,9 @@ const ProfilePage = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // 🎯 Kasadan hem bileti (token) hem de kimliği (userId) alıyoruz
         const token = localStorage.getItem("token");
         const userId = localStorage.getItem("userId");
 
-        // İkisinden biri yoksa adamı yaka paça login'e yolla
         if (!token || !userId) {
             navigate("/login");
             return;
@@ -31,8 +28,6 @@ const ProfilePage = () => {
         // Kiralama geçmişini çek
         const fetchRentals = async () => {
             try {
-                // 🚀 Axios yerine doğrudan kendi yazdığımız RentalService'i kullanıyoruz!
-                // İçine de kasadan aldığımız userId'yi Number'a çevirip veriyoruz.
                 const response = await RentalService.getRentalsByUserId(parseInt(userId));
                 setRentals(response.data);
                 setLoading(false);
@@ -50,7 +45,6 @@ const ProfilePage = () => {
         <div className="min-h-screen bg-slate-50 py-12 px-6 font-sans text-gray-900">
             <div className="max-w-5xl mx-auto">
 
-                {/* Profil Başlığı */}
                 <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8 flex items-center gap-6">
                     <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-3xl font-bold">
                         👤
@@ -69,7 +63,6 @@ const ProfilePage = () => {
                 {loading && <div className="text-center font-bold text-xl py-10 text-gray-500">Kayıtlar aranıyor... ⏳</div>}
                 {error && <div className="bg-red-100 text-red-600 font-bold p-6 rounded-2xl text-center border border-red-200">{error}</div>}
 
-                {/* Eğer hiç kiralama yapılmamışsa */}
                 {!loading && !error && rentals.length === 0 && (
                     <div className="text-center bg-white p-12 rounded-3xl border border-dashed border-gray-300">
                         <span className="text-5xl mb-4 block">🏜️</span>
@@ -81,13 +74,11 @@ const ProfilePage = () => {
                     </div>
                 )}
 
-                {/* Kiralama Geçmişi Listesi (Faturalar) */}
                 {!loading && !error && rentals.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {rentals.map((rental) => (
                             <div key={rental.id} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 hover:shadow-md transition flex flex-col relative overflow-hidden">
 
-                                {/* Üst sağdaki ufak dekoratif çizgi */}
                                 <div className="absolute top-0 right-0 w-16 h-1 bg-blue-500"></div>
 
                                 <div className="flex justify-between items-start mb-4">
@@ -104,13 +95,11 @@ const ProfilePage = () => {
 
                                 <div className="mt-auto pt-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                                     <div className="flex gap-6">
-                                        {/* Başlangıç Tarihi */}
                                         <div>
                                             <p className="text-sm text-gray-500 font-medium">Başlangıç Tarihi</p>
                                             <p className="font-bold text-gray-800">{rental.dateStarted}</p>
                                         </div>
 
-                                        {/* Bitiş Tarihi */}
                                         <div>
                                             <p className="text-sm text-gray-500 font-medium flex items-center gap-1">
                                                 Bitiş Tarihi

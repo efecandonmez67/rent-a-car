@@ -23,7 +23,6 @@ const HomePage = () => {
     return (
         <div className="font-sans text-gray-900">
 
-            {/* HERO SECTION */}
             <div className="bg-slate-900 text-white py-32 px-6 text-center relative overflow-hidden">
                 <div className="max-w-4xl mx-auto relative z-10">
                     <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
@@ -45,7 +44,7 @@ const HomePage = () => {
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-slate-900 to-transparent opacity-80"></div>
             </div>
 
-            {/* FEATURES */}
+            {/* features */}
             <div className="py-24 bg-white px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                     <div className="p-6 border border-gray-100 rounded-3xl shadow-sm hover:shadow-md transition">
@@ -66,7 +65,7 @@ const HomePage = () => {
                 </div>
             </div>
 
-            {/* ARABA LİSTESİ (DİNAMİK KISIM) */}
+            {/* car list */}
             <div className="py-24 bg-slate-50 px-6">
                 <div className="max-w-7xl mx-auto">
                     <h2 className="text-4xl font-extrabold text-center mb-16 text-gray-900">
@@ -85,7 +84,6 @@ const HomePage = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {cars.map((car: any) => (
                                 <div key={car.id} className="bg-white rounded-3xl shadow-md overflow-hidden border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col">
-                                    {/* Resimler JsonIgnore olduğu için şimdilik havalı bir placeholder koyduk */}
                                     <img
                                         src={"https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                                         alt="Araba"
@@ -94,7 +92,6 @@ const HomePage = () => {
                                     <div className="p-6 flex-grow flex flex-col justify-between">
                                         <div>
                                             <div className="flex justify-between items-start mb-2">
-                                                {/* Eğer backend'den DTO geliyorsa car.modelName olabilir, Entity geliyorsa car.model?.name olabilir. Biz güvene aldık, bulamazsa Plakayı yazar! */}
                                                 <h3 className="text-2xl font-bold text-gray-800">
                                                     {car.modelName || (car.model && car.model.name) || car.plate || "Bilinmeyen Araç"}
                                                 </h3>

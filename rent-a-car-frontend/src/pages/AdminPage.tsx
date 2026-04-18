@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 interface CreateCarRequest { modelId: number; dailyPrice: number; modelYear: number; plate: string; state: number; }
 interface Brand { id: number; name: string; }
@@ -15,9 +15,9 @@ function AdminPage() {
     const [models, setModels] = useState<Model[]>([]);
     const [cars, setCars] = useState<CarResponse[]>([]);
 
-    const fetchBrands = async () => { try { const res = await axios.get("http://localhost:8080/api/brands"); setBrands(res.data); } catch (e) { console.error(e); } };
-    const fetchModels = async () => { try { const res = await axios.get("http://localhost:8080/api/models"); setModels(res.data); } catch (e) { console.error(e); } };
-    const fetchCars = async () => { try { const res = await axios.get("http://localhost:8080/api/cars"); setCars(res.data); } catch (e) { console.error(e); } };
+    const fetchBrands = async () => { try { const res = await api.get("/brands"); setBrands(res.data); } catch (e) { console.error(e); } };
+    const fetchModels = async () => { try { const res = await api.get("/models"); setModels(res.data); } catch (e) { console.error(e); } };
+    const fetchCars = async () => { try { const res = await api.get("/cars"); setCars(res.data); } catch (e) { console.error(e); } };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -33,46 +33,43 @@ function AdminPage() {
         fetchCars();
     }, [navigate]);
 
-    // --- MARKA EKLEME İŞLEMLERİ ---
     const [newBrandName, setNewBrandName] = useState("");
     const handleBrandSubmit = async (e: any) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:8080/api/brands", { name: newBrandName }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            await api.post("/brands", { name: newBrandName });
             setNotification({ type: "success", message: "Marka başarıyla eklendi! 🏷️" });
             setNewBrandName("");
-            fetchBrands(); // Marka eklendikten sonra listeyi yenile
+            fetchBrands();
             setTimeout(() => setNotification({type:"", message:""}), 3000);
         } catch (error) {
             setNotification({ type: "error", message: "Hata: Marka eklenemedi!" });
         }
     };
 
-    // --- MODEL EKLEME İŞLEMLERİ ---
     const [newModelName, setNewModelName] = useState("");
     const [selectedBrandForModel, setSelectedBrandForModel] = useState<number>(0);
     const handleModelSubmit = async (e: any) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:8080/api/models", { name: newModelName, brandId: selectedBrandForModel }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            await api.post("/models", { name: newModelName, brandId: selectedBrandForModel });
             setNotification({ type: "success", message: "Model başarıyla eklendi! 🚘" });
             setNewModelName("");
             setSelectedBrandForModel(0);
-            fetchModels(); // Model eklendikten sonra araç listesi için yenile
+            fetchModels();
             setTimeout(() => setNotification({type:"", message:""}), 3000);
         } catch (error) {
             setNotification({ type: "error", message: "Hata: Model eklenemedi!" });
         }
     };
 
-    // --- ARAÇ EKLEME İŞLEMLERİ ---
     const [formData, setFormData] = useState<CreateCarRequest>({ modelId: 0, dailyPrice: 0, modelYear: 2023, plate: "", state: 1 });
     const handleChange = (e: any) => setFormData({ ...formData, [e.target.name]: e.target.name === "plate" ? e.target.value : Number(e.target.value) });
 
     const handleCarSubmit = async (e: any) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:8080/api/cars", formData, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            await api.post("/cars", formData);
             setNotification({ type: "success", message: "Araç başarıyla eklendi." });
             setFormData({ modelId: 0, dailyPrice: 0, modelYear: 2023, plate: "", state: 1 });
             fetchCars();
@@ -82,13 +79,12 @@ function AdminPage() {
         }
     };
 
-    // --- İADE (TESLİM ALMA) İŞLEMLERİ ---
     const handleReturnCar = async (car: CarResponse) => {
         try {
             const targetModel = models.find(m => m.name === car.modelName);
             if (!targetModel) return;
             const updatePayload = { id: car.id, modelId: targetModel.id, dailyPrice: car.dailyPrice, modelYear: car.modelYear, plate: car.plate, state: 1 };
-            await axios.put("http://localhost:8080/api/cars", updatePayload, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+            await api.put("/cars", updatePayload);
             setNotification({ type: "success", message: `${car.plate} plakalı araç teslim alındı!` });
             fetchCars();
             setTimeout(() => setNotification({type:"", message:""}), 3000);
@@ -97,7 +93,6 @@ function AdminPage() {
         }
     };
 
-    // --- FOTOĞRAF YÜKLEME İŞLEMLERİ ---
     const [imageCarId, setImageCarId] = useState<number>(0);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -113,9 +108,8 @@ function AdminPage() {
         uploadData.append("carId", imageCarId.toString());
 
         try {
-            await axios.post("http://localhost:8080/api/car-images/add", uploadData, {
+            await api.post("/car-images/add", uploadData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                     "Content-Type": "multipart/form-data"
                 }
             });
@@ -158,10 +152,8 @@ function AdminPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
 
-                    {/* SOL KOLON - VERİ GİRİŞ FORMLARI */}
                     <div className="lg:col-span-1 space-y-8">
 
-                        {/* YENİ MARKA EKLE */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-purple-500"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -176,7 +168,6 @@ function AdminPage() {
                             </form>
                         </div>
 
-                        {/* YENİ MODEL EKLE */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-indigo-500"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -198,7 +189,6 @@ function AdminPage() {
                             </form>
                         </div>
 
-                        {/* YENİ ARAÇ KAYDI (Mevcut) */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-gray-600"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -228,7 +218,6 @@ function AdminPage() {
                             </form>
                         </div>
 
-                        {/* FOTOĞRAF YÜKLE (Mevcut) */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-blue-500"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -261,9 +250,7 @@ function AdminPage() {
 
                     </div>
 
-                    {/* SAĞ KOLON - TABLOLAR VE LİSTELER (Mevcut koduna hiç dokunmadık) */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Kiradaki Araçlar Kartı (Senin kodun birebir aynısı) */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-orange-400"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
@@ -289,7 +276,6 @@ function AdminPage() {
                             )}
                         </div>
 
-                        {/* Vitrindeki Araçlar Kartı (Senin kodun birebir aynısı) */}
                         <div className="bg-white p-6 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-2 h-full bg-green-500"></div>
                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api"
 import { useNavigate, Link } from "react-router-dom";
 
 const LoginPage = () => {
@@ -15,22 +15,19 @@ const LoginPage = () => {
         setError("");
 
         try {
-            const response = await axios.post("http://localhost:8080/api/auth/login", {
+            const response = await api.post("/auth/login", {
                 email,
                 password
             });
 
-            // YENİ SİSTEM: Paketin içinden hem bileti (token) hem rozeti (role) alıyoruz!
             const { token, role, id } = response.data;
 
-            console.log("Giriş başarılı, gelen ID:", id); // Kontrol için ekle
+            console.log("Giriş başarılı, gelen ID:", id);
 
-            // İkisini de tarayıcının kasasına kilitliyoruz
             localStorage.setItem("token", token);
             localStorage.setItem("role", role);
             localStorage.setItem("userId", id.toString());
 
-            // Şov vakti: Adam ADMIN ise direkt yönetim paneline, değilse vitrine yolla
             if (role === "ADMIN" || role === "ROLE_ADMIN") {
                 navigate("/admin");
             } else {

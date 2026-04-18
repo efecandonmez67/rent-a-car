@@ -1,7 +1,6 @@
 const Spinner = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '50px 0' }}>
-            {/* Dönen Çember */}
             <div style={{
                 width: '60px',
                 height: '60px',
@@ -11,7 +10,7 @@ const Spinner = () => {
                 animation: 'spin 1s linear infinite'
             }}></div>
 
-            {/* Kullanıcıyı Bilgilendiren Metin */}
+            {/* metin */}
             <h3 style={{ marginTop: '20px', color: '#555', fontFamily: 'sans-serif' }}>
                 Sistem Motoru Isıtıyor...
             </h3>
@@ -19,7 +18,7 @@ const Spinner = () => {
                 Ücretsiz bulut sunucusu kullanıldığı için ilk yükleme 30-40 saniye sürebilir.
             </p>
 
-            {/* Animasyon için CSS */}
+            {/* anim css */}
             <style>
                 {`
                     @keyframes spin {

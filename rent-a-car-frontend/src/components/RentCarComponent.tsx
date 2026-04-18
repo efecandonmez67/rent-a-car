@@ -14,7 +14,7 @@ const RentCarComponent = ({ carId, dailyPrice, carName, onSuccess, onCancel }: R
     const [rentedForDays, setRentedForDays] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [isSuccess, setIsSuccess] = useState(false); // Başarı takibi için
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const handleRent = async () => {
         const userId = localStorage.getItem("userId");
@@ -36,10 +36,8 @@ const RentCarComponent = ({ carId, dailyPrice, carName, onSuccess, onCancel }: R
             setError('');
             await RentalService.rentCar(requestData);
 
-            // 🎯 ALERT YERİNE BURAYI GÜNCELLEDİK
             setIsSuccess(true);
 
-            // 3 saniye sonra modalı otomatik kapatıp listeyi yenile
             setTimeout(() => {
                 onSuccess();
             }, 3000);
@@ -51,7 +49,6 @@ const RentCarComponent = ({ carId, dailyPrice, carName, onSuccess, onCancel }: R
         }
     };
 
-    // ✅ BAŞARILI OLDUĞUNDA GÖSTERİLECEK EKRAN
     if (isSuccess) {
         return (
             <div className="flex flex-col items-center justify-center py-10 text-center animate-bounce-short">
@@ -73,7 +70,6 @@ const RentCarComponent = ({ carId, dailyPrice, carName, onSuccess, onCancel }: R
         );
     }
 
-    // 🏎️ NORMAL FORM EKRANI
     return (
         <div className="flex flex-col gap-4">
             <div>

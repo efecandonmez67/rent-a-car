@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 
 const RegisterPage = () => {
@@ -9,12 +9,12 @@ const RegisterPage = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
-        // Backend'deki @Size(min = 6) kuralını burada da kontrol edelim
         if (password.length < 6) {
             setError("Şifre en az 6 karakter olmalıdır!");
             setLoading(false);
@@ -22,12 +22,12 @@ const RegisterPage = () => {
         }
 
         try {
-            // Sadece email ve password gönderiyoruz, tam Backend'in istediği gibi!
-            await axios.post("https://rent-a-car-api-ccen.onrender.com/api/auth/register", {
+            await api.post("/auth/register", {
                 email: email,
                 password: password
             });
 
+            alert("Kayıt başarılı! Giriş yapabilirsiniz.");
             navigate("/login");
 
         } catch (err: any) {

@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import RentCarComponent from '../components/RentCarComponent';
-import Spinner from '../components/Spinner'; // 1. SPINNER'I İÇERİ ALDIK
+import Spinner from '../components/Spinner';
 
-// 인터फेйслер aynı kalıyor
 interface CarResponse {
     id: number;
     dailyPrice: number;
@@ -22,10 +21,6 @@ interface CarImageResponse {
     car: { id: number };
 }
 
-// 2. HAYAT KURTARAN URL MANTIĞI: Canlıda Render'a, lokalde 8080'e gider.
-const API_URL = import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:8080/api";
 
 const CarsPage = () => {
     const navigate = useNavigate();
@@ -34,10 +29,9 @@ const CarsPage = () => {
     const { data, isLoading, refetch } = useQuery({
         queryKey: ["carsAndImages"],
         queryFn: async () => {
-            // 3. LOCALHOST YAZAN YERLERİ DİNAMİK YAPTIK
             const [carsRes, imagesRes] = await Promise.all([
-                axios.get(`${API_URL}/cars`),
-                axios.get(`${API_URL}/car-images/getAll`)
+                api.get("/cars"),
+                api.get("/car-images/getAll")
             ]);
             return { cars: carsRes.data as CarResponse[], images: imagesRes.data as CarImageResponse[] };
         }
@@ -61,7 +55,6 @@ const CarsPage = () => {
                     </h1>
                 </div>
 
-                {/* 4. YAZIYI SİLDİK, YERİNE SPINNER KOYDUK */}
                 {isLoading ? (
                     <Spinner />
                 ) : availableCars.length === 0 ? (
@@ -70,7 +63,6 @@ const CarsPage = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {/* Arabaları listeleme kısmı aynı... */}
                         {availableCars.map((car) => (
                             <div key={car.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 flex flex-col">
                                 <div className="h-56 overflow-hidden relative bg-slate-100">
@@ -109,7 +101,6 @@ const CarsPage = () => {
                 )}
             </div>
 
-            {/* Modal kısmı aynı... */}
             {selectedCar && (
                 <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
                     <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full relative">

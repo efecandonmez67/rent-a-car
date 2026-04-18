@@ -3,11 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 const Navbar = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role'); // YENİ: Rozeti de okuyoruz!
+    const role = localStorage.getItem('role');
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('role'); // YENİ: Çıkış yaparken rozeti de çöpe atıyoruz
+        localStorage.removeItem('role');
         navigate('/login');
     };
 
@@ -25,7 +25,6 @@ const Navbar = () => {
 
                     {token ? (
                         <>
-                            {/* YENİ ŞART: Sadece rolü ADMIN olanlar bu butonu görebilir! */}
                             {role === 'ADMIN' && (
                                 <Link to="/admin" className="text-gray-500 hover:text-blue-600 font-semibold transition">
                                     Yönetim Paneli
